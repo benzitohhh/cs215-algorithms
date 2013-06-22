@@ -1,5 +1,8 @@
-import fileinput
+import csv
+import time
+import heapq
 
+filename = '/Users/immanuel_ben/Desktop/learn/cs215-algorithms/week4/homework/imdb-1.tsv'
 
 def make_link(G, node1, node2):
     if node1 not in G:
@@ -23,20 +26,25 @@ def centrality_average(G, v):
                 open_list.append(neighbor)
     return (0.0 + sum(distance_from_start.values())) / len(distance_from_start)
 
-
-
+def heap_search(k, big_array):
+    # to compare the items, create a class
+    class ResObj(list):
+        def __lt__(self, other):
+            return self[1] < other[1]
+    return heapq.nsmallest(k, [ResObj(i) for i in big_array])
 
 G = {}
 actors = set()
 movies = set()
-fi = fileinput.input(['/Users/immanuel_ben/Desktop/cs215-algorithms/week4/homework/imdb-1.tsv'])
-for line in fi:
-    line = line.rstrip('\n')
-    actor, movie, year = line.split("\t")
+
+tsv = csv.reader(open(filename), delimiter='\t')
+for (actor, movie_name, year) in tsv:
+    # ensure movie names are unique by appending year
+    movie = str(movie_name) + ", " + str(year)
     make_link(G, actor, movie)
     actors.add(actor)
     movies.add(movie)
-fi.close()
+
 actors = list(actors)
 movies = list(movies)
 
@@ -44,5 +52,11 @@ avg_centrality_per_actor = {}
 for actor in actors:
     avg_centrality_per_actor[actor] = centrality_average(G, actor)
 
-# TODO: BEN: shouldn't this be the min here?
-res = sorted(avg_centrality_per_actor, key = lambda x: avg_centrality_per_actor[x])
+# if n is relatively small, this is ok:
+#res = sorted(avg_centrality_per_actor.items(), key = lambda x: x[1])
+#res = res[:20]
+
+# But if n is large, use a heap to keep track of n smallest
+res = heap_search(20, avg_centrality_per_actor)
+
+print res
