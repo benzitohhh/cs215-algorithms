@@ -8,15 +8,13 @@
 # For example, if the input graph was
 # [(1, 2), (2, 3), (3, 1)]
 # A possible Eulerian tour would be [1, 2, 3, 1]
-import ipdb
+import pdb
 
 def find_eulerian_tour(graph):
-    ipdb.set_trace()
     path = find_path(graph, set(), [], graph[0])
     return [edge[0] for edge in path[:-1]] + list(path[-1]) if path else []
 
 def find_path(all_edges, explored, path, current_edge):
-    ipdb.set_trace()
     explored = explored | set([current_edge]) | set([tuple(reversed(current_edge))])
 
     # Note that setA <= setB is true iff setA is a subset of or equal to setB
@@ -34,4 +32,4 @@ def find_path(all_edges, explored, path, current_edge):
     return []
 
 graph = [(1, 2), (2, 3), (3, 1)]
-# find_eulerian_tour(graph)
+print find_eulerian_tour(graph)
